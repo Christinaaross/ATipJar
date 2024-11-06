@@ -3,14 +3,14 @@ package user;
 public class User {
 	private int id;
 	private String name;
-	private String email;
+	//private String email;
 	private static int idCount = 0;
 	
 
 	public User(int userID, String name) {
 		this.id = idCount++;
 		this.name = name;
-		this.email = email;
+		//this.email = email;
 	
 	}
 	public String getName() {

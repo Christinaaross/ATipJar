@@ -1,20 +1,17 @@
 package appOutput;
 
 import java.sql.Connection;
-import java.sql.Statement;
-
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AppData {
 
-    private Connection connection;
-    private Statement statement;
+    private static final String URL = "jdbc:mysql://localhost:3306/mytipjar";
+    private static final String USER = "root"; 
+    private static final String PASSWORD = "Lavender444!"; 
 
-    
     public AppData() {
-        //FOR CONNECTION BRING IN THE DRIVER
+        // LOADING THE DRIVER
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("Driver Loaded!");
@@ -22,42 +19,21 @@ public class AppData {
             System.out.println("Driver could NOT be Loaded");
             e.printStackTrace();
         }
+    }
 
-        // CONNECTION TO THE DATABASE
+    // NEW CONNECTION
+    public Connection getConnection() {
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mytipjar", "root", "Lavender444!");
-            System.out.println("Database connected!");
+            return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException ex) {
             System.out.println("Database could NOT connect");
             ex.printStackTrace();
-        }
-
-        // STATEMENT OBJECT
-        try {
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            System.out.println("Statement object created");
-        } catch (SQLException ex) {
-            System.out.println("Error in statement object");
-            ex.printStackTrace();
+            return null;
         }
     }
-    
-    public Connection getConnection() {
-        return connection;
-    }
 
-    // close Connection and Statement
-    public void close() {
-        try {
-            if (statement != null && !statement.isClosed()) {
-                statement.close();
-                System.out.println("Statement closed.");
-            }
-        } catch (SQLException e) {
-            System.out.println("Failed to close statement.");
-            e.printStackTrace();
-        }
-
+    // CLOSE CONNECTION
+    public void close(Connection connection) {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -69,3 +45,4 @@ public class AppData {
         }
     }
 }
+
