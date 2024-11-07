@@ -8,7 +8,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class TipPredictionBox {
-
+//
     private TipAnalytics tipAnalytics;
 
     public TipPredictionBox(TipAnalytics tipAnalytics) {

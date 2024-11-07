@@ -2,7 +2,7 @@ package app;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
+//
 import appOutput.AppData;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -40,7 +40,7 @@ public class TipJar {
         this.tipAnalytics = new TipAnalytics(appData);
         this.tipPredictionBox = new TipPredictionBox(tipAnalytics);
         this.shiftDataSaver = new ShiftDataSaver(appData);
-        this.analyticsPage = new AnalyticsPage();
+        this.analyticsPage = new AnalyticsPage(appData);
 
         createHeader();
         appScreen.setLeft(addLeft());

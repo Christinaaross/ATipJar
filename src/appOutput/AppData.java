@@ -3,7 +3,7 @@ package appOutput;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
+//
 public class AppData {
 
     private static final String URL = "jdbc:mysql://localhost:3306/mytipjar";
@@ -22,7 +22,7 @@ public class AppData {
     }
 
     // NEW CONNECTION
-    public Connection getConnection() {
+    public static Connection getConnection() { // chnaged to stat
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException ex) {

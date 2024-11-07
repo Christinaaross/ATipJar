@@ -1,7 +1,6 @@
 package app;
-
+//
 import appOutput.AppData;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +11,8 @@ import java.time.LocalDate;
 
 public class ShiftDataSaver {
 
-    private AppData appData;
+    @SuppressWarnings("unused")
+	private AppData appData;
 
     public ShiftDataSaver(AppData appData) {
         this.appData = appData;
@@ -21,7 +21,7 @@ public class ShiftDataSaver {
     public boolean saveShiftData(LocalDate selectedDate, BigDecimal shiftHours, BigDecimal cashTips, BigDecimal cardTips) {
         boolean isSuccessful = false;
 
-        try (Connection connection = appData.getConnection()) {
+        try (Connection connection = AppData.getConnection()) {
         	 connection.setAutoCommit(false);
         	 
         	// inserts eveything successfully
@@ -41,7 +41,7 @@ public class ShiftDataSaver {
                     if (generatedKeys.next()) {
                         int shiftId = generatedKeys.getInt(1);
 
-                        // Step 2: Insert data into the `tip_record` table using the shiftId
+                        //Insert data into the `tip_record` table using the shiftId
                         String insertTipQuery = "INSERT INTO tip_record (shiftId, cashTip, cardTip) VALUES (?, ?, ?)";
                         try (PreparedStatement tipStmt = connection.prepareStatement(insertTipQuery)) {
                             tipStmt.setInt(1, shiftId);
