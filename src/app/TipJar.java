@@ -50,6 +50,7 @@ public class TipJar {
 
     public void show() {
         Scene scene = new Scene(appScreen, 1000, 700);
+       // scene.getStylesheets().add(getClass().getResource("/resources/css/styles.css").toExternalForm());
         primaryStage.setTitle("TipJar");
         primaryStage.setScene(scene);
         primaryStage.show();
