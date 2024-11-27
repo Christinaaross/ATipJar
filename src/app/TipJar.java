@@ -2,9 +2,10 @@ package app;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-//
+import java.util.List;
 import appOutput.AppData;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -21,7 +22,7 @@ import javafx.stage.Stage;
 
 public class TipJar {
 
-    @SuppressWarnings("unused")
+   // @SuppressWarnings("unused")
 	private AppData appData;
     private TipAnalytics tipAnalytics;
     private TipPredictionBox tipPredictionBox;
@@ -97,11 +98,58 @@ public class TipJar {
         vbox.setPadding(new Insets(20));
         vbox.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #d0d0d0; -fx-border-width: 1; -fx-border-radius: 5;");
 
-        vbox.getChildren().addAll(createDateAndShiftRow(), createTipRow(), createSubmitButtonRow(), tipPredictionBox.createPredictionBox());
-        return vbox;
+        vbox.getChildren().addAll(
+                createDateAndShiftRow(),
+                createTipRow(),
+                createSubmitButtonRow(),
+                tipPredictionBox.createPredictionBox()
+            );
+
+            // Add EarningsReportUI using SwingNode
+           vbox.getChildren().add(createEarningsReportNode());
+
+            return vbox;
     }
 
-    private Node createDateAndShiftRow() {
+    @SuppressWarnings("unchecked")
+	private Node createEarningsReportNode() {
+    	 TableView<Object[]> tableView = new TableView<>();
+
+    	    // Define columns
+    	    TableColumn<Object[], String> userIdCol = new TableColumn<>("UserID");
+    	    userIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[0].toString()));
+
+    	    TableColumn<Object[], String> nameCol = new TableColumn<>("Name");
+    	    nameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[1].toString()));
+
+    	    TableColumn<Object[], String> dateCol = new TableColumn<>("Date");
+    	    dateCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[2].toString()));
+
+    	    TableColumn<Object[], String> shiftCol = new TableColumn<>("Shift Duration");
+    	    shiftCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[3].toString()));
+
+    	    TableColumn<Object[], String> cashTipCol = new TableColumn<>("Cash Tip");
+    	    cashTipCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[4].toString()));
+
+    	    TableColumn<Object[], String> cardTipCol = new TableColumn<>("Card Tip");
+    	    cardTipCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[5].toString()));
+
+    	    tableView.getColumns().addAll(userIdCol, nameCol, dateCol, shiftCol, cashTipCol, cardTipCol);
+
+    	    // Populate the table with data
+    	    EarningsReport earningsReport = new EarningsReport(appData);
+    	    List<Object[]> data = earningsReport.getEarningsData();
+    	    tableView.getItems().addAll(data);
+
+    	    VBox container = new VBox(tableView);
+    	    container.setPadding(new Insets(20));
+    	    container.setAlignment(Pos.CENTER);
+    	    container.setStyle("-fx-border-color: gray; -fx-border-width: 1; -fx-background-color: #ffffff;");
+
+        return container;
+	}
+
+	private Node createDateAndShiftRow() {
         VBox container = new VBox(10);
         container.setPadding(new Insets(10));
         container.setStyle("-fx-background-color: #ffffff; -fx-border-color: #d0d0d0; -fx-border-width: 1; -fx-border-radius: 5;");
