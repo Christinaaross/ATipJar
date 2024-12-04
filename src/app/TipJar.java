@@ -35,6 +35,9 @@ public class TipJar {
     private TextField cardTipsField;
     private ShiftDataSaver shiftDataSaver;
     private AnalyticsPage analyticsPage;
+    private TableView<Object[]> tableView;
+    private TaxPage taxPage;
+
 
     public TipJar(AppData appData, Stage primaryStage) {
         this.appData = appData;
@@ -43,6 +46,7 @@ public class TipJar {
         this.tipPredictionBox = new TipPredictionBox(tipAnalytics);
         this.shiftDataSaver = new ShiftDataSaver(appData);
         this.analyticsPage = new AnalyticsPage(appData);
+        this.taxPage = new TaxPage(appData);
 
         createHeader();
         appScreen.setLeft(addLeft());
@@ -93,12 +97,12 @@ public class TipJar {
     }
 
     private void loadTaxPage() {
-       //for later tax page 
+        appScreen.setCenter(taxPage.getView());
     }
 
     private Node addCenter() {
         VBox vbox = new VBox(20);
-        vbox.setAlignment(Pos.TOP_CENTER);
+        vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(20));
         vbox.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #d0d0d0; -fx-border-width: 1; -fx-border-radius: 5;");
 
@@ -111,47 +115,51 @@ public class TipJar {
 
             // Add EarningsReportUI using SwingNode
            vbox.getChildren().add(createEarningsReportNode());
+           // hehehbewbfwwbej
 
             return vbox;
     }
 
     @SuppressWarnings("unchecked")
 	private Node createEarningsReportNode() {
-    	 TableView<Object[]> tableView = new TableView<>();
+    	tableView = new TableView<>();
+    	
+    	TableColumn<Object[], String> userIdCol = new TableColumn<>("UserID");
+	    userIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[0].toString()));
 
-    	    // Define columns
-    	    TableColumn<Object[], String> userIdCol = new TableColumn<>("UserID");
-    	    userIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[0].toString()));
+	    TableColumn<Object[], String> nameCol = new TableColumn<>("Name");
+	    nameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[1].toString()));
 
-    	    TableColumn<Object[], String> nameCol = new TableColumn<>("Name");
-    	    nameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[1].toString()));
+	    TableColumn<Object[], String> dateCol = new TableColumn<>("Date");
+	    dateCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[2].toString()));
 
-    	    TableColumn<Object[], String> dateCol = new TableColumn<>("Date");
-    	    dateCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[2].toString()));
+	    TableColumn<Object[], String> shiftCol = new TableColumn<>("Shift Duration");
+	    shiftCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[3].toString()));
 
-    	    TableColumn<Object[], String> shiftCol = new TableColumn<>("Shift Duration");
-    	    shiftCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[3].toString()));
+	    TableColumn<Object[], String> cashTipCol = new TableColumn<>("Cash Tip");
+	    cashTipCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[4].toString()));
 
-    	    TableColumn<Object[], String> cashTipCol = new TableColumn<>("Cash Tip");
-    	    cashTipCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[4].toString()));
+	    TableColumn<Object[], String> cardTipCol = new TableColumn<>("Card Tip");
+	    cardTipCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[5].toString()));
 
-    	    TableColumn<Object[], String> cardTipCol = new TableColumn<>("Card Tip");
-    	    cardTipCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[5].toString()));
+	    tableView.getColumns().addAll(userIdCol, nameCol, dateCol, shiftCol, cashTipCol, cardTipCol);
 
-    	    tableView.getColumns().addAll(userIdCol, nameCol, dateCol, shiftCol, cashTipCol, cardTipCol);
+	    // Populate the table with data
+	    
+	    updateTable();
+	    //EarningsReport earningsReport = new EarningsReport(appData);
+	    //List<Object[]> data = earningsReport.getEarningsData();
+	   // tableView.getItems().addAll(data);
 
-    	    // Populate the table with data
-    	    EarningsReport earningsReport = new EarningsReport(appData);
-    	    List<Object[]> data = earningsReport.getEarningsData();
-    	    tableView.getItems().addAll(data);
+	    VBox container = new VBox(tableView);
+	    container.setPadding(new Insets(20));
+	    container.setAlignment(Pos.CENTER);
+	    container.setStyle("-fx-border-color: gray; -fx-border-width: 1; -fx-background-color: #ffffff;");
 
-    	    VBox container = new VBox(tableView);
-    	    container.setPadding(new Insets(20));
-    	    container.setAlignment(Pos.CENTER);
-    	    container.setStyle("-fx-border-color: gray; -fx-border-width: 1; -fx-background-color: #ffffff;");
-
-        return container;
-	}
+    return container;
+    	
+    }
+    
 
 	private Node createDateAndShiftRow() {
         VBox container = new VBox(10);
@@ -218,17 +226,40 @@ public class TipJar {
         boolean isSaved = shiftDataSaver.saveShiftData(selectedDate, shiftHours, cashTips, cardTips);
 
         if (isSaved) {
+        	playSound();
+        	
             showAlert(Alert.AlertType.INFORMATION, "Data Entry Confirmed", "Shift data saved successfully!");
             datePicker.setValue(LocalDate.now());
             shiftField.clear();
             cashTipsField.clear();
             cardTipsField.clear();
+            
+            // update table on submit
+            updateTable();
+            
+            
+
         } else {
             showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to save shift data. Please try again.");
         }
     }
 
-    private void createHeader() {
+    private void playSound() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void updateTable() {
+		if(tableView !=null) {
+			tableView.getItems().clear();
+			EarningsReport report = new EarningsReport(appData);
+			List<Object[]> updatedData = report.getEarningsData();
+			tableView.getItems().addAll(updatedData);
+		}
+		
+	}
+
+	private void createHeader() {
         HBox header = new HBox();
         header.setPadding(new Insets(15));
         header.setAlignment(Pos.CENTER);

@@ -41,7 +41,7 @@ public class EarningsReportUI extends JFrame {
 	            AppData appData = new AppData(); // AppData implemented
 	            EarningsReport earningsReport = new EarningsReport(appData);
 	            EarningsReportUI frame = new EarningsReportUI(earningsReport);
-	            frame.setVisible(true);
+	            frame.setVisible(false); // false so screen doesnt populate
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
@@ -112,9 +112,9 @@ public class EarningsReportUI extends JFrame {
 	    table.setModel(tableModel);
 	
 	}
-	// earnings report
+	// earnings report 
 	public List<Object[]> getEarningsData() {
-	    String query = "SELECT u.userId, u.firstName, s.date, s.totalDuration, tr.cashTip, tr.cardTip " +
+	    String query = "SELECT s.userId, u.firstName, s.date, s.totalDuration, tr.cashTip, tr.cardTip " +
 	                   "FROM user u " +
 	                   "JOIN shift s ON u.userId = s.userId " +
 	                   "JOIN tip_record tr ON s.shiftId = tr.shiftId";
