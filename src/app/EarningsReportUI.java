@@ -38,7 +38,7 @@ public class EarningsReportUI extends JFrame {
 	public static void main(String[] args) {
 	    EventQueue.invokeLater(() -> {
 	        try {
-	            AppData appData = new AppData(); // Ensure AppData is correctly implemented
+	            AppData appData = new AppData(); // AppData implemented
 	            EarningsReport earningsReport = new EarningsReport(appData);
 	            EarningsReportUI frame = new EarningsReportUI(earningsReport);
 	            frame.setVisible(true);
@@ -100,7 +100,7 @@ public class EarningsReportUI extends JFrame {
 	    // Create a DefaultTableModel with the column names
 	    DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-	    // Fetch data from EarningsReport
+	    // Data from EarningsReport
 	    List<Object[]> data = earningsReport.getEarningsData();
 
 	    // Add each row of data to the table model

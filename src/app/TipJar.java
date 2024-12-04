@@ -19,6 +19,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import user.User;
 
 public class TipJar {
 
@@ -51,7 +52,10 @@ public class TipJar {
 
     public void show() {
         Scene scene = new Scene(appScreen, 1000, 700);
-       // scene.getStylesheets().add(getClass().getResource("/resources/css/styles.css").toExternalForm());
+        //Break up into two line for multiple scenes
+        String css = this.getClass().getResource("app.css").toExternalForm();
+        scene.getStylesheets().add(css);
+     
         primaryStage.setTitle("TipJar");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -60,8 +64,8 @@ public class TipJar {
     private Node addLeft() {
         VBox vbox = new VBox(15);
         vbox.setPadding(new Insets(10));
-        vbox.setAlignment(Pos.TOP_CENTER);
-        vbox.setStyle("-fx-background-color: #f0f0f0; -fx-border-color: gold; -fx-border-width: 2; -fx-border-radius: 5; -fx-text-fill: black;");
+        vbox.setAlignment(Pos.TOP_CENTER);        //-fx-border-color: gold;
+        vbox.setStyle("-fx-background-color: #f0f0f0;  -fx-border-width: 2; -fx-border-radius: 5; -fx-text-fill: black;");
         // gold outline
         Text title = new Text("Navigation");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 16));
@@ -198,12 +202,10 @@ public class TipJar {
         HBox hbox = new HBox();
         hbox.setAlignment(Pos.CENTER);
         hbox.setPadding(new Insets(10));
-
         Button submitButton = new Button("Submit");
         submitButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         submitButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 8 15 8 15;");
         submitButton.setOnAction(e -> handleSubmit());
-
         hbox.getChildren().add(submitButton);
         return hbox;
     }
@@ -213,7 +215,6 @@ public class TipJar {
         BigDecimal shiftHours = new BigDecimal(shiftField.getText().isEmpty() ? "0" : shiftField.getText());
         BigDecimal cashTips = new BigDecimal(cashTipsField.getText().isEmpty() ? "0" : cashTipsField.getText());
         BigDecimal cardTips = new BigDecimal(cardTipsField.getText().isEmpty() ? "0" : cardTipsField.getText());
-
         boolean isSaved = shiftDataSaver.saveShiftData(selectedDate, shiftHours, cashTips, cardTips);
 
         if (isSaved) {
@@ -231,11 +232,8 @@ public class TipJar {
         HBox header = new HBox();
         header.setPadding(new Insets(15));
         header.setAlignment(Pos.CENTER);
-        header.setStyle("-fx-background-color: #333333;");
-        Text title = new Text("Welcome to TipJar");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-        title.setFill(Color.GOLD);
-
+        Text title = new Text("     TipJar");
+        title.setFont(Font.font("Serif", FontWeight.LIGHT, 24));
         header.getChildren().add(title);
         appScreen.setTop(header);
     }
@@ -244,11 +242,9 @@ public class TipJar {
         VBox exitBox = new VBox(15);
         exitBox.setPadding(new Insets(20));
         exitBox.setAlignment(Pos.BASELINE_RIGHT);
-
         Button btnExit = new Button("Exit");
         btnExit.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         btnExit.setOnAction(e -> Platform.exit());
-
         exitBox.getChildren().add(btnExit);
         appScreen.setBottom(exitBox);
     }

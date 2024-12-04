@@ -19,7 +19,7 @@ public class TipPredictionBox {
         VBox predictionBox = new VBox(10);
         predictionBox.setAlignment(Pos.CENTER);
         predictionBox.setPadding(new Insets(10));
-        predictionBox.setStyle("-fx-border-color: gray; -fx-border-width: 1; -fx-background-color: #f9f9f9;");
+        predictionBox.setStyle("-fx-border-color: gray; -fx-border-width: 1;-fx-background-color: #f9f9f9"); //-fx-background-color: #f9f9f9;
 
         Label predictionLabel = new Label("Tip Prediction");
         predictionLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -30,9 +30,9 @@ public class TipPredictionBox {
 
         Label bubbleLabel = new Label("The best days to work are " + bestDays + ", where you make $" 
                                       + String.format("%.2f", averageEarnings) + " per hour.");
-        bubbleLabel.setStyle("-fx-background-color: lightblue; -fx-border-radius: 20; -fx-background-radius: 20; "
-                           + "-fx-padding: 10; -fx-font-size: 14; -fx-font-family: Arial;");
-        bubbleLabel.setWrapText(true);
+        //bubbleLabel.setStyle("-fx-background-color: lightblue; -fx-border-radius: 20; -fx-background-radius: 20; "
+                        //   + "-fx-padding: 10; -fx-font-size: 14; -fx-font-family: Arial;");
+       // bubbleLabel.setWrapText(true);
 
         // Add labels to the prediction box
         predictionBox.getChildren().addAll(predictionLabel, bubbleLabel);
