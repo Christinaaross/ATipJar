@@ -19,7 +19,7 @@ public class EarningsReport {
 	}
 	
 	public List<Object[]> getEarningsData() {
-		String query = "SELECT u.userId, u.firstName, s.date, s.totalDuration, tr.cashTip, tr.cardTip " +
+		String query = "SELECT tr.tipID, u.firstName, s.date, s.totalDuration, tr.cashTip, tr.cardTip " +
 						"FROM user u " + 
 						"JOIN shift s ON u.userId = s.userId " +
 						"JOIN tip_record tr ON s.shiftId = tr.shiftId ";
@@ -34,7 +34,7 @@ public class EarningsReport {
 		
 		while (rs.next()) {
             Object[] row = {
-                rs.getInt("userId"),
+                rs.getInt("tipID"),
                 rs.getString("firstName"),
                 rs.getDate("date"),
                 rs.getBigDecimal("totalDuration"),
@@ -61,10 +61,8 @@ public class EarningsReport {
 	}catch (SQLException ex) {
         System.out.println("Database error while generating report.");
         ex.printStackTrace();
-    } /*catch (IOException ex) {
-        System.out.println("Something went wrong when writing the file.");
-        ex.printStackTrace();}
-        */
+    }
+        
 	return data;
 	}
 }

@@ -27,7 +27,7 @@ public class AnalyticsPage {
 	 public AnalyticsPage(AppData appData) {
 	        this.appData = appData;
 	    }
-
+	 
     public Node getView() {
         VBox analyticsContent = new VBox(20);
         analyticsContent.setPadding(new Insets(20));

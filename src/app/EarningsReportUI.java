@@ -75,9 +75,9 @@ public class EarningsReportUI extends JFrame {
 	    table.setBackground(Color.WHITE);
 	    table.setCellSelectionEnabled(true);
 	    table.setColumnSelectionAllowed(true);
-	    table.setRowSelectionAllowed(false);
+	    table.setRowSelectionAllowed(true);
 	    table.setBorder(null);
-	    table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	    table.setShowVerticalLines(false);
 	    table.setFillsViewportHeight(true);
 	    table.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -95,7 +95,7 @@ public class EarningsReportUI extends JFrame {
 
 	private void populateTableWithEarnings(EarningsReport earningsReport) {
 	    // Define column names for the table
-	    String[] columnNames = {"UserID", "Name", "Date", "Shift Duration", "Cash Tip", "Card Tip"};
+	    String[] columnNames = {"tipID", "Name", "Date", "Shift Duration", "Cash Tip", "Card Tip"};
 
 	    // Create a DefaultTableModel with the column names
 	    DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
@@ -114,7 +114,7 @@ public class EarningsReportUI extends JFrame {
 	}
 	// earnings report 
 	public List<Object[]> getEarningsData() {
-	    String query = "SELECT s.userId, u.firstName, s.date, s.totalDuration, tr.cashTip, tr.cardTip " +
+	    String query = "SELECT tr.tipID, u.firstName, s.date, s.totalDuration, tr.cashTip, tr.cardTip " +
 	                   "FROM user u " +
 	                   "JOIN shift s ON u.userId = s.userId " +
 	                   "JOIN tip_record tr ON s.shiftId = tr.shiftId";
@@ -126,7 +126,7 @@ public class EarningsReportUI extends JFrame {
 	
 	        while (rs.next()) {
 	            Object[] row = {
-	                rs.getInt("userId"),
+	                rs.getInt("tipID"),
 	                rs.getString("firstName"),
 	                rs.getDate("date"),
 	                rs.getBigDecimal("totalDuration"),

@@ -1,6 +1,9 @@
 package app;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import appOutput.AppData;
@@ -123,9 +126,9 @@ public class TipJar {
     @SuppressWarnings("unchecked")
 	private Node createEarningsReportNode() {
     	tableView = new TableView<>();
-    	
-    	TableColumn<Object[], String> userIdCol = new TableColumn<>("UserID");
-	    userIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[0].toString()));
+    
+    	TableColumn<Object[], String> tipIdCol = new TableColumn<>("tipID");
+	    tipIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[0].toString()));
 
 	    TableColumn<Object[], String> nameCol = new TableColumn<>("Name");
 	    nameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[1].toString()));
@@ -142,24 +145,72 @@ public class TipJar {
 	    TableColumn<Object[], String> cardTipCol = new TableColumn<>("Card Tip");
 	    cardTipCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[5].toString()));
 
-	    tableView.getColumns().addAll(userIdCol, nameCol, dateCol, shiftCol, cashTipCol, cardTipCol);
+	    tableView.getColumns().addAll(tipIdCol, nameCol, dateCol, shiftCol, cashTipCol, cardTipCol);
 
-	    // Populate the table with data
+	 
 	    
 	    updateTable();
-	    //EarningsReport earningsReport = new EarningsReport(appData);
-	    //List<Object[]> data = earningsReport.getEarningsData();
-	   // tableView.getItems().addAll(data);
+	   
+	    // Delete Button
+	    Button deleteButton = new Button("Delete Selected");
+	    deleteButton.setStyle("-fx-background-color: #ff6666; -fx-text-fill: white;");
+	    deleteButton.setOnAction(event -> {
+	    	
+	        //selected row
+	        Object[] selectedItem = tableView.getSelectionModel().getSelectedItem();
 
-	    VBox container = new VBox(tableView);
+	        if (selectedItem != null) {
+	            // Delete the selected item from the database
+	        	// using tipid in col 0
+	            boolean success = deleteDataFromDatabase(selectedItem[0].toString()); 
+
+	            if (success) {
+	                // Remove the selected item 
+	                tableView.getItems().remove(selectedItem);
+	            } else {
+	                //  error msg if delete fails
+	                Alert alert = new Alert(Alert.AlertType.ERROR);
+	                alert.setTitle("Error");
+	                alert.setHeaderText(null);
+	                alert.setContentText("Failed to delete the selected record.");
+	                alert.showAndWait();
+	            }
+	        } else {
+	            // error msg if no row is selected
+	            Alert alert = new Alert(Alert.AlertType.WARNING);
+	            alert.setTitle("No Selection");
+	            alert.setHeaderText(null);
+	            alert.setContentText("Please select a row to delete.");
+	            alert.showAndWait();
+	        }
+	    });
+
+	    // add all contents
+	    VBox container = new VBox(10, tableView, deleteButton);
 	    container.setPadding(new Insets(20));
 	    container.setAlignment(Pos.CENTER);
 	    container.setStyle("-fx-border-color: gray; -fx-border-width: 1; -fx-background-color: #ffffff;");
 
-    return container;
-    	
-    }
-    
+	    return container;
+	}
+   
+
+	private boolean deleteDataFromDatabase(String userId) {
+		
+		String deleteQuery = "DELETE FROM myTiPJar.tip_record WHERE tipID = ?";
+	
+	    try (Connection conn = AppData.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(deleteQuery)) {
+
+	        stmt.setString(1, userId);
+	        int rowsAffected = stmt.executeUpdate();
+
+	        return rowsAffected > 0; 
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false; 
+	    }
+	}
 
 	private Node createDateAndShiftRow() {
         VBox container = new VBox(10);
@@ -236,8 +287,7 @@ public class TipJar {
             
             // update table on submit
             updateTable();
-            
-            
+ 
 
         } else {
             showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to save shift data. Please try again.");

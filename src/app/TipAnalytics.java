@@ -13,7 +13,7 @@ public class TipAnalytics {
     public TipAnalytics(AppData appData) {
         this.appData = appData;
     }
-
+    
     public double calculateAverageEarningsPerHour() {
         double totalTips = 0.0;
         double totalHours = 0.0;
