@@ -20,7 +20,7 @@ public class AppData {
             e.printStackTrace();
         }
     }
-
+    
     // NEW CONNECTION
     public static Connection getConnection() { // chnaged to stat
         try {

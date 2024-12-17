@@ -13,7 +13,7 @@ public class StartTipJar extends Application {
         launch(args);
     }
 
-    @Override
+    @Override 
     public void start(Stage primaryStage) throws Exception {
         
         appData = new AppData();

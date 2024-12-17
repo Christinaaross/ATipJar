@@ -22,7 +22,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import user.User;
 
 public class TipJar {
 
@@ -56,12 +55,15 @@ public class TipJar {
         appScreen.setCenter(addCenter());
         exitGame();
     }
-
+  
+    // AND STYLE SHEET
     public void show() {
         Scene scene = new Scene(appScreen, 1000, 700);
         //Break up into two line for multiple scenes
-        String css = this.getClass().getResource("app.css").toExternalForm();
-        scene.getStylesheets().add(css);
+        
+        //DELETE THIS IS YOU NO LONGER USING STYLE SHEET 
+        //String css = this.getClass().getResource("app.css").toExternalForm();
+        //scene.getStylesheets().add(css);
      
         primaryStage.setTitle("TipJar");
         primaryStage.setScene(scene);
@@ -79,7 +81,7 @@ public class TipJar {
         title.setFill(Color.DARKSLATEGRAY);
         vbox.getChildren().add(title);
 
-        Hyperlink homeLink = new Hyperlink("Home Page");
+        Hyperlink homeLink = new Hyperlink("Home");
         Hyperlink analyticsLink = new Hyperlink("Analytics");
         Hyperlink taxLink = new Hyperlink("Tax Calculation");
 
@@ -271,13 +273,35 @@ public class TipJar {
 
     private void handleSubmit() {
         LocalDate selectedDate = datePicker.getValue();
-        BigDecimal shiftHours = new BigDecimal(shiftField.getText().isEmpty() ? "0" : shiftField.getText());
-        BigDecimal cashTips = new BigDecimal(cashTipsField.getText().isEmpty() ? "0" : cashTipsField.getText());
-        BigDecimal cardTips = new BigDecimal(cardTipsField.getText().isEmpty() ? "0" : cardTipsField.getText());
+        String shiftHoursText = shiftField.getText();
+        String cashTipsText = cashTipsField.getText();
+        String cardTipsText = cardTipsField.getText();
+        
+        
+        if ((shiftHoursText == null || shiftHoursText.trim().isEmpty()) &&
+                (cashTipsText == null || cashTipsText.trim().isEmpty()) &&
+                (cardTipsText == null || cardTipsText.trim().isEmpty())) {
+
+                showAlert(Alert.AlertType.ERROR, "Input Error", "All fields are empty. Please enter data before submitting.");
+                return;  }
+        if ((cashTipsText == null || cashTipsText.trim().isEmpty()) && 
+                (cardTipsText == null || cardTipsText.trim().isEmpty())){ 	
+        		showAlert(Alert.AlertType.ERROR, "Input Error", "Cash and Card Tips cannot be empty if Shift Hours is entered.");
+                return;  }
+        
+        if (((cashTipsText != null && !cashTipsText.trim().isEmpty()) || 
+                (cardTipsText != null && !cardTipsText.trim().isEmpty())) &&
+                (shiftHoursText == null || shiftHoursText.trim().isEmpty())) {
+               showAlert(Alert.AlertType.ERROR, "Input Error", "Shift Hours cannot be empty if Cash Tips or Card Tips are entered.");
+               return; }
+        
+        try {
+        BigDecimal shiftHours = new BigDecimal(shiftHoursText.isEmpty() ? "0" : shiftHoursText);
+        BigDecimal cashTips = new BigDecimal(cashTipsText.isEmpty() ? "0" : cashTipsText);
+        BigDecimal cardTips = new BigDecimal(cardTipsText.isEmpty() ? "0" : cardTipsText);
         boolean isSaved = shiftDataSaver.saveShiftData(selectedDate, shiftHours, cashTips, cardTips);
 
         if (isSaved) {
-        	playSound();
         	
             showAlert(Alert.AlertType.INFORMATION, "Data Entry Confirmed", "Shift data saved successfully!");
             datePicker.setValue(LocalDate.now());
@@ -285,19 +309,15 @@ public class TipJar {
             cashTipsField.clear();
             cardTipsField.clear();
             
-            // update table on submit
-            updateTable();
+            updateTable(); // update table on submit
  
-
         } else {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to save shift data. Please try again.");
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to save shift data.");
+        	}
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Input Error", "All fields are blank.");
         }
     }
-
-    private void playSound() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	private void updateTable() {
 		if(tableView !=null) {
@@ -306,7 +326,6 @@ public class TipJar {
 			List<Object[]> updatedData = report.getEarningsData();
 			tableView.getItems().addAll(updatedData);
 		}
-		
 	}
 
 	private void createHeader() {

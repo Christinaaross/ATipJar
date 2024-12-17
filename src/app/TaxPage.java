@@ -81,7 +81,7 @@ public class TaxPage {
             });
         }).start();
 
-        
+         
         // Txt box over img
         StackPane imageStack = new StackPane();
         imageStack.getChildren().addAll(imageView, savingsLabel);
