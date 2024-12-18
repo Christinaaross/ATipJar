@@ -24,11 +24,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class TipJar {
-
-   // @SuppressWarnings("unused")
 	private AppData appData;
-    private TipAnalytics tipAnalytics;
-    private TipPredictionBox tipPredictionBox;
+    @SuppressWarnings("unused")
+	private TipAnalytics tipAnalytics;
+    //private TipPredictionBox tipPredictionBox;
     private BorderPane appScreen = new BorderPane();
     private Stage primaryStage;
     private DatePicker datePicker;
@@ -45,8 +44,8 @@ public class TipJar {
         this.appData = appData;
         this.primaryStage = primaryStage;
         this.tipAnalytics = new TipAnalytics(appData);
-        this.tipPredictionBox = new TipPredictionBox(tipAnalytics);
-        this.shiftDataSaver = new ShiftDataSaver(appData);
+        //this.tipPredictionBox = new TipPredictionBox(tipAnalytics); // removed prediction box from home page
+        this.shiftDataSaver = new ShiftDataSaver(appData); 
         this.analyticsPage = new AnalyticsPage(appData);
         this.taxPage = new TaxPage(appData);
 
@@ -58,7 +57,7 @@ public class TipJar {
   
     // AND STYLE SHEET
     public void show() {
-        Scene scene = new Scene(appScreen, 1000, 700);
+        Scene scene = new Scene(appScreen, 1100, 800);
         //Break up into two line for multiple scenes
         
         //DELETE THIS IS YOU NO LONGER USING STYLE SHEET 
@@ -73,9 +72,9 @@ public class TipJar {
     private Node addLeft() {
         VBox vbox = new VBox(15);
         vbox.setPadding(new Insets(10));
-        vbox.setAlignment(Pos.TOP_CENTER);        //-fx-border-color: gold;
+        vbox.setAlignment(Pos.TOP_CENTER);        
         vbox.setStyle("-fx-background-color: #f0f0f0;  -fx-border-width: 2; -fx-border-radius: 5; -fx-text-fill: black;");
-        // gold outline
+       
         Text title = new Text("Navigation");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 16));
         title.setFill(Color.DARKSLATEGRAY);
@@ -114,14 +113,11 @@ public class TipJar {
         vbox.getChildren().addAll(
                 createDateAndShiftRow(),
                 createTipRow(),
-                createSubmitButtonRow(),
-                tipPredictionBox.createPredictionBox()
-            );
+                createSubmitButtonRow()//,
+                /*tipPredictionBox.createPredictionBox()*/ );
 
             // Add EarningsReportUI using SwingNode
            vbox.getChildren().add(createEarningsReportNode());
-           // hehehbewbfwwbej
-
             return vbox;
     }
 
@@ -277,23 +273,19 @@ public class TipJar {
         String cashTipsText = cashTipsField.getText();
         String cardTipsText = cardTipsField.getText();
         
-        
-        if ((shiftHoursText == null || shiftHoursText.trim().isEmpty()) &&
-                (cashTipsText == null || cashTipsText.trim().isEmpty()) &&
-                (cardTipsText == null || cardTipsText.trim().isEmpty())) {
+        boolean shiftEmpty = (shiftHoursText == null || shiftHoursText.trim().isEmpty());
+        boolean cashEmpty = (cashTipsText == null || cashTipsText.trim().isEmpty());
+        boolean cardEmpty = (cardTipsText == null || cardTipsText.trim().isEmpty());
 
-                showAlert(Alert.AlertType.ERROR, "Input Error", "All fields are empty. Please enter data before submitting.");
-                return;  }
-        if ((cashTipsText == null || cashTipsText.trim().isEmpty()) && 
-                (cardTipsText == null || cardTipsText.trim().isEmpty())){ 	
-        		showAlert(Alert.AlertType.ERROR, "Input Error", "Cash and Card Tips cannot be empty if Shift Hours is entered.");
-                return;  }
-        
-        if (((cashTipsText != null && !cashTipsText.trim().isEmpty()) || 
-                (cardTipsText != null && !cardTipsText.trim().isEmpty())) &&
-                (shiftHoursText == null || shiftHoursText.trim().isEmpty())) {
-               showAlert(Alert.AlertType.ERROR, "Input Error", "Shift Hours cannot be empty if Cash Tips or Card Tips are entered.");
-               return; }
+        if (shiftEmpty && cashEmpty && cardEmpty) {
+            showAlert(Alert.AlertType.ERROR, "Input Error", "All fields are empty. Please enter data before submitting.");
+            return; }
+        if (cashEmpty && cardEmpty && !shiftEmpty) {
+            showAlert(Alert.AlertType.ERROR, "Input Error", "Cash and Card Tips cannot be empty if Shift Hours is entered.");
+            return; }
+        if ((shiftEmpty && (!cashEmpty || !cardEmpty))) {
+            showAlert(Alert.AlertType.ERROR, "Input Error", "Shift Hours cannot be empty if Cash Tips or Card Tips are entered.");
+            return;  }
         
         try {
         BigDecimal shiftHours = new BigDecimal(shiftHoursText.isEmpty() ? "0" : shiftHoursText);

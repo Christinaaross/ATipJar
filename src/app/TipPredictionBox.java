@@ -1,5 +1,7 @@
 package app;
 
+import java.util.List;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,13 +29,7 @@ public class TipPredictionBox {
         Label predictionLabel = new Label("Tip Prediction");
         predictionLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
-        String bestDays = tipAnalytics.getBestDaysToWork();
-        
-        double averageEarnings = tipAnalytics.calculateAverageEarningsPerHour();
-
-        bubbleLabel = new Label("The best days to work are " + bestDays + ", where you make $" 
-                                      + String.format("%.2f", averageEarnings) + " per hour.");
-        
+        bubbleLabel = new Label();
         //updated data
         updatedPrediction();
         
@@ -42,16 +38,24 @@ public class TipPredictionBox {
         return predictionBox;
     }
 
-	private void updatedPrediction() {
-		
-		String bestDays = tipAnalytics.getBestDaysToWork();
-        double averageEarnings = tipAnalytics.calculateAverageEarningsPerHour();
+    private void updatedPrediction() {
+    	
+        new Thread(() -> {
+            List<String> bestDaysList = tipAnalytics.getBestDaysList();
 
-        // update the label
-        Platform.runLater(() -> {
-            bubbleLabel.setText("The best days to work are " + bestDays + ", where you make $" 
-                                + String.format("%.2f", averageEarnings) + " per hour.");
-        });
-		
-	}
+            if (bestDaysList == null || bestDaysList.isEmpty()) {
+                updateBubbleLabel("No data available for predictions.");
+                return;  }
+
+            double bestDayAverage = tipAnalytics.calculateAvgPH(bestDaysList);
+            String message = "The best days to work are " + String.join(", ", bestDaysList) +
+                             ", where you make $" + String.format("%.2f", bestDayAverage) + " the highest tip-shift average per hour.";
+            updateBubbleLabel(message);
+            
+        }).start();
+    }
+
+    private void updateBubbleLabel(String message) {
+        Platform.runLater(() -> bubbleLabel.setText(message));
+    }
 }

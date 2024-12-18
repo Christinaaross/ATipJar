@@ -23,9 +23,13 @@ public class AnalyticsPage {
 	
 	@SuppressWarnings("unused")
 	private final AppData appData;
+	private TipAnalytics tipAnalytics;
+	private TipPredictionBox tipPredictionBox;
 	
 	 public AnalyticsPage(AppData appData) {
 	        this.appData = appData;
+	        this.tipAnalytics = new TipAnalytics(appData);
+	        this.tipPredictionBox = new TipPredictionBox(tipAnalytics);
 	    }
 	 
     public Node getView() {
@@ -44,12 +48,13 @@ public class AnalyticsPage {
         summaryStats.setPadding(new Insets(20));
        summaryStats.setStyle("-fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-border-radius: 5;");
        populateSummaryStats(summaryStats);
+       
 
         //Line Chart for Trends 
         LineChart<String, Number> trendsLineChart = createTrendsLineChart();
         
         // add all to frame
-        analyticsContent.getChildren().addAll(analyticsTitle, summaryStats, trendsLineChart);
+        analyticsContent.getChildren().addAll(analyticsTitle, summaryStats,tipPredictionBox.createPredictionBox(), trendsLineChart);
         return analyticsContent;
     }
     
@@ -122,7 +127,6 @@ public class AnalyticsPage {
         label.setWrapText(true);
         label.setAlignment(Pos.CENTER);
 
-        
         Label valueLabel = new Label(Value); // added values for it to show
         valueLabel.setFont(Font.font("Serif", FontWeight.BOLD, 14));
         valueLabel.setAlignment(Pos.CENTER);

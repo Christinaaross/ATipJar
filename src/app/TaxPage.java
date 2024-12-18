@@ -1,9 +1,11 @@
 package app;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 import appOutput.AppData;
 import javafx.animation.KeyFrame;
@@ -12,6 +14,7 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -61,6 +64,25 @@ public class TaxPage {
             Platform.runLater(() -> savingsLabel.setText(savingsData));
         }).start();
         
+        Button resetButton = new Button("Reset Tax For New Year");
+        resetButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        resetButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10 20; -fx-border-radius: 5;");
+        resetButton.setOnAction(event -> resetTaxData(savingsLabel));
+        
+        LocalDate currentDate = LocalDate.now();
+        int currentYear = LocalDate.now().getYear();
+
+        if (currentDate.isBefore(LocalDate.of(currentYear, 1, 1))) {
+            resetButton.setDisable(true);
+        }
+
+        resetButton.setOnAction(event -> {
+            if (currentDate.isBefore(LocalDate.of(currentYear + 1, 1, 1))) {
+                savingsLabel.setText("Reset is only allowed on or after January 1st.");
+            } else {
+                resetTaxData(savingsLabel);
+            }
+        });
         
         // Blinking animation 
         new Thread(() -> {
@@ -86,13 +108,35 @@ public class TaxPage {
         StackPane imageStack = new StackPane();
         imageStack.getChildren().addAll(imageView, savingsLabel);
         StackPane.setAlignment(savingsLabel, Pos.CENTER_RIGHT);
-        StackPane.setMargin(savingsLabel, new Insets(193, 200, 40, 0));
-        											//top , right , bottom, left
+        StackPane.setMargin(savingsLabel, new Insets(193, 250, 40, 0));
+        											// top , right , bottom, left
         //add all contents
-        taxContent.getChildren().addAll(taxTitle, imageStack);
+        taxContent.getChildren().addAll(taxTitle, imageStack, resetButton);
         return taxContent;
     }
 	
+	private void resetTaxData(Label savingsLabel) {
+        String resetQuery = "DELETE tr FROM tip_record tr " +
+                            "JOIN shift s ON tr.shiftId = s.shiftId " +
+                            "WHERE YEAR(s.date) < YEAR(CURDATE());"; // deletes all data from previous years 
+        					// Will fix later!
+
+        try (Connection conn = AppData.getConnection();
+             PreparedStatement pre = conn.prepareStatement(resetQuery)) {
+
+            int rowsAffected = pre.executeUpdate();
+
+            Platform.runLater(() -> {
+                savingsLabel.setText("Tax data reset! Removed " + rowsAffected + " records.");
+                System.out.println("Reset successful. Records removed: " + rowsAffected);
+            });
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Platform.runLater(() -> savingsLabel.setText("Error resetting tax data."));
+        }
+    }
+
 	public String taxBox() {
 		String taxQuery = "SELECT "
 				+ "SUM(tr.cashTip + tr.cardTip) * 0.014 AS SuggestedSavings "+
